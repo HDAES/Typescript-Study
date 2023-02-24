@@ -9,14 +9,30 @@ const showDecorator: MethodDecorator = (target: Object, propertyKey: string | sy
   descriptor.writable = true; //控制该函数是否可以修改
 };
 
-const hideDecorator: MethodDecorator = (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
-  console.log(target, target === User); //[class User]  使用方法返回构造函数
+const hideDecorator1: MethodDecorator = (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+  console.log(target, target === User); //[class User]  静态方法返回构造函数
 };
 
+const hideDecorator: MethodDecorator = (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+  descriptor.writable = false; // 不可修改函数
+};
 class User {
   @showDecorator
   show() {}
 
   @hideDecorator
   private static hide() {}
+
+  @hideDecorator1
+  hide1() {}
 }
+
+User.prototype.show = () => {
+  console.log("writable show");
+};
+
+User.prototype.hide1 = () => {
+  console.log("writable show"); //TypeError: Cannot assign to read only property 'hide1' of object '#<User>'
+};
+
+new User().show(); //writable show
